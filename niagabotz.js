@@ -8296,7 +8296,7 @@ case "y":
 	console.log(util.format(err));
 	let e = String(err);
 	kris.sendMessage("6285812486745@s.whatsapp.net", {
-		text: "assalamualaikum Owner Ada Fitur Yang Eror Nih " + util.format(e),
+		text: "assalamualaikum Owner Ada Fitur Yang Eror Nihh " + util.format(e),
 		contextInfo: {
 			forwardingScore: 5,
 			isForwarded: true,
