@@ -33,7 +33,7 @@ global.mess = {
   private: "Fitur Cuma Bisa Di Vrivate Chat",
 };
 
-global.keydepo = "997d5f70e07dfea5de2c0a96d57372ac";
+global.keydepo = "997d5f70e07dfea5de2c0wqw57372ac";
 global.paydisini = {
   validt: "1800",
   layanan: "17",
