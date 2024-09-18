@@ -10,7 +10,7 @@ global.website = "https://kristopup.my.id/";
 global.server = "NIAGAKUY H2H";
 global.digiuser = "kobigoDA2zbW";
 
-global.digiapi = "dev-6cbaddb0-43ce-11ee-8f80-dd5b3b78b44b";
+global.digiapi = "dev-6cbb0-43ce-11ee-8f80-dd5b3b78b44b";
 global.sessionName = "session";
 global.nomorKu = "6285812486745@s.whatsapp.net";
 global.pajak = `350`;

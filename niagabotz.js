@@ -4816,8 +4816,10 @@ break;
                 		});
 
                 		const statusResponseData = await statusResponse.json();
+						// console.log(status)
                 		if (statusResponseData.success) {
                 			const statusData = statusResponseData.data;
+							console.log(statusData.status)
                 			if (statusData.status === "Success") {
                 				sett("+saldo", m.sender, nominal);
                 				let lop = 
@@ -4845,7 +4847,7 @@ break;
                 		reply("Terjadi kesalahan saat memproses transaksi, silakan coba lagi nanti.");
                 		clearInterval(checkStatusInterval);
                 	}
-                }, 60000); // Cek setiap 60 detik
+                }, 20000); // Cek setiap 60 detik
 
             } else {
             	reply(`Error: ${responseData.msg}`);
