@@ -541,255 +541,267 @@ module.exports = kris = async (kris, msg, m, chatUpdate, store) => {
   		},
   	},
   };
-  let sos = JSON.parse(fs.readFileSync("./Pengaturan/database/datasmm.json"));
-  let sosi = JSON.parse(
-  	fs.readFileSync("./Pengaturan/database/datasmm2.json")
-  	);
-  var list_produk = JSON.parse(
-  	fs.readFileSync("./Pengaturan/database/datadigiflaz.json")
-  	);
-  var layanan_otp = JSON.parse(
-  	fs.readFileSync("./Pengaturan/database/otpweb/_otp.json")
-  	);
-  var list_negara = JSON.parse(
-  	fs.readFileSync("./Pengaturan/database/otpweb/negara.json")
-  	);
-  var user = JSON.parse(fs.readFileSync("./Pengaturan/database/user.json"));
-  const profitt = JSON.parse(
-  	fs.readFileSync("./Pengaturan/database/profit.json")
-  	);
-  const profit = profitt.profit;
-  const cek = (satu, dua) => {
-  	let x1 = false;
-  	Object.keys(user).forEach((i) => {
-  		if (user[i].id == dua) {
-  			x1 = i;
-  		}
-  	});
-  	if (x1 !== false) {
-  		if (satu == "id") {
-  			return user[x1].id;
-  		}
-  		if (satu == "layanan") {
-  			return user[x1].layanan;
-  		}
-  		if (satu == "saldo") {
-  			return user[x1].saldo;
-  		}
-  		if (satu == "status_sosmed") {
-  			return user[x1].status_sosmed;
-  		}
-  		if (satu == "product_name") {
-  			return user[x1].product_name;
-  		}
-  		if (satu == "harga") {
-  			return user[x1].harga;
-  		}
-  		if (satu == "tujuan") {
-  			return user[x1].tujuan;
-  		}
-  		if (satu == "price") {
-  			return user[x1].price;
-  		}
-  		if (satu == "jumlah") {
-  			return user[x1].jumlah;
-  		}
-  		if (satu == "upharga") {
-  			return user[x1].upharga;
-  		}
-  		if (satu == "price") {
-  			return user[x1].price;
-  		}
-  		if (satu == "reff") {
-  			return user[x1].reff;
-  		}
-  		if (satu == "desc") {
-  			return user[x1].desc;
-  		}
-  		if (satu == "status") {
-  			return user[x1].status;
-  		}
-  		if (satu == "kode_layanan") {
-  			return user[x1].kode_layanan;
-  		}
-  		if (satu == "role") {
-  			return user[x1].role;
-  		}
-  		if (satu == "level") {
-  			return user[x1].level;
-  		}
-  		if (satu == "buyer_sku_code") {
-  			return user[x1].buyer_sku_code;
-  		}
-  	}
-  	if (x1 == false) {
-  		return null;
-  	}
-  };
-  let sett = (satu, dua, tiga) => {
-  	Object.keys(user).forEach((i) => {
-  		if (user[i].id == dua) {
-  			if (satu == "+saldo") {
-  				user[i].saldo += tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "-saldo") {
-  				user[i].saldo -= tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "harga") {
-  				user[i].harga = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "jumlah") {
-  				user[i].jumlah = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "level") {
-  				user[i].level = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "buyer_sku_code") {
-  				user[i].buyer_sku_code = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "product_name") {
-  				user[i].product_name = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "price") {
-  				user[i].price = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "upharga") {
-  				user[i].upharga = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "price") {
-  				user[i].price = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "status") {
-  				user[i].status = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "layanan") {
-  				user[i].layanan = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "status_sosmed") {
-  				user[i].status_sosmed = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "tujuan") {
-  				user[i].tujuan = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "desc") {
-  				user[i].desc = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "kode_layanan") {
-  				user[i].kode_layanan = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "reff") {
-  				user[i].reff = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  			if (satu == "role") {
-  				user[i].role = tiga;
-  				fs.writeFileSync(
-  					"./Pengaturan/database/user.json",
-  					JSON.stringify(user)
-  					);
-  			}
-  		}
-  	});
-  };
+  // const fs = require('fs');
 
-  const daftarr = () => {
-  	if (cek("id", m.sender) == null) {
-  		user.push({
-  			id: m.sender,
-  			saldo: 0,
-  			buyer_sku_code: "",
-  			product_name: "",
-  			tujuan: "",
-  			price: "",
-  			jumlah: "",
-  			level: "member",
-  			role: "USER",
-  			layanan: "",
-  			upharga: 5,
-  			harga: 0,
-  			tujuan: "",
-  			status_sosmed: true,
-  			kode_layanan: "",
-  			desc: "",
-  			reff: "",
-  		});
-  		fs.writeFileSync(
-  			"./Pengaturan/database/user.json",
-  			JSON.stringify(user)
-  			);
-  		const suc = `──〔 *REGISTRASI SUKSES* 〕─\n_›› Nomor : ${m.sender.split("@")[0]}_\n_›› Saldo : ${cek("saldo", m.sender)}_\n_›› Role : ${cek("role", m.sender)}_\n\n_Terimakasih telah mendaftar semoga nyaman menggunakan layann yang di sediakan oleh kami_
-  		`;
-  		kris.sendMessage(m.chat, { text: `${suc}` }, { quoted: m });
-  	}
-  };
-  function formatMoney(nominal) {
+  function readJsonFile(filePath) {
+  	try {
+  		const data = fs.readFileSync(filePath);
+  		return JSON.parse(data);
+  	} catch (error) {
+  		console.error(`Error reading or parsing ${filePath}:`, error);
+    return null; // Kembalikan null atau nilai default jika ada error
+}
+}
+
+let sos = readJsonFile("./Pengaturan/database/datasmm.json");
+let sosi = readJsonFile("./Pengaturan/database/datasmm2.json");
+var list_produk = readJsonFile("./Pengaturan/database/datadigiflaz.json");
+var layanan_otp = readJsonFile("./Pengaturan/database/otpweb/_otp.json");
+var list_negara = readJsonFile("./Pengaturan/database/otpweb/negara.json");
+var user = readJsonFile("./Pengaturan/database/user.json");
+const profitt = readJsonFile("./Pengaturan/database/profit.json");
+
+// Check if any files returned null
+if (!sos) console.warn("sos data not loaded properly.");
+if (!sosi) console.warn("sosi data not loaded properly.");
+if (!list_produk) console.warn("list_produk data not loaded properly.");
+if (!layanan_otp) console.warn("layanan_otp data not loaded properly.");
+if (!list_negara) console.warn("list_negara data not loaded properly.");
+if (!user) console.warn("user data not loaded properly.");
+if (!profitt) console.warn("profitt data not loaded properly.");
+
+const profit = profitt.profit;
+const cek = (satu, dua) => {
+	let x1 = false;
+	Object.keys(user).forEach((i) => {
+		if (user[i].id == dua) {
+			x1 = i;
+		}
+	});
+	if (x1 !== false) {
+		if (satu == "id") {
+			return user[x1].id;
+		}
+		if (satu == "layanan") {
+			return user[x1].layanan;
+		}
+		if (satu == "saldo") {
+			return user[x1].saldo;
+		}
+		if (satu == "status_sosmed") {
+			return user[x1].status_sosmed;
+		}
+		if (satu == "product_name") {
+			return user[x1].product_name;
+		}
+		if (satu == "harga") {
+			return user[x1].harga;
+		}
+		if (satu == "tujuan") {
+			return user[x1].tujuan;
+		}
+		if (satu == "price") {
+			return user[x1].price;
+		}
+		if (satu == "jumlah") {
+			return user[x1].jumlah;
+		}
+		if (satu == "upharga") {
+			return user[x1].upharga;
+		}
+		if (satu == "price") {
+			return user[x1].price;
+		}
+		if (satu == "reff") {
+			return user[x1].reff;
+		}
+		if (satu == "desc") {
+			return user[x1].desc;
+		}
+		if (satu == "status") {
+			return user[x1].status;
+		}
+		if (satu == "kode_layanan") {
+			return user[x1].kode_layanan;
+		}
+		if (satu == "role") {
+			return user[x1].role;
+		}
+		if (satu == "level") {
+			return user[x1].level;
+		}
+		if (satu == "buyer_sku_code") {
+			return user[x1].buyer_sku_code;
+		}
+	}
+	if (x1 == false) {
+		return null;
+	}
+};
+let sett = (satu, dua, tiga) => {
+	Object.keys(user).forEach((i) => {
+		if (user[i].id == dua) {
+			if (satu == "+saldo") {
+				user[i].saldo += tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "-saldo") {
+				user[i].saldo -= tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "harga") {
+				user[i].harga = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "jumlah") {
+				user[i].jumlah = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "level") {
+				user[i].level = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "buyer_sku_code") {
+				user[i].buyer_sku_code = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "product_name") {
+				user[i].product_name = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "price") {
+				user[i].price = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "upharga") {
+				user[i].upharga = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "price") {
+				user[i].price = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "status") {
+				user[i].status = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "layanan") {
+				user[i].layanan = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "status_sosmed") {
+				user[i].status_sosmed = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "tujuan") {
+				user[i].tujuan = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "desc") {
+				user[i].desc = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "kode_layanan") {
+				user[i].kode_layanan = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "reff") {
+				user[i].reff = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+			if (satu == "role") {
+				user[i].role = tiga;
+				fs.writeFileSync(
+					"./Pengaturan/database/user.json",
+					JSON.stringify(user)
+					);
+			}
+		}
+	});
+};
+
+const daftarr = () => {
+	if (cek("id", m.sender) == null) {
+		user.push({
+			id: m.sender,
+			saldo: 0,
+			buyer_sku_code: "",
+			product_name: "",
+			tujuan: "",
+			price: "",
+			jumlah: "",
+			level: "member",
+			role: "USER",
+			layanan: "",
+			upharga: 5,
+			harga: 0,
+			tujuan: "",
+			status_sosmed: true,
+			kode_layanan: "",
+			desc: "",
+			reff: "",
+		});
+		fs.writeFileSync(
+			"./Pengaturan/database/user.json",
+			JSON.stringify(user)
+			);
+		const suc = `──〔 *REGISTRASI SUKSES* 〕─\n_›› Nomor : ${m.sender.split("@")[0]}_\n_›› Saldo : ${cek("saldo", m.sender)}_\n_›› Role : ${cek("role", m.sender)}_\n\n_Terimakasih telah mendaftar semoga nyaman menggunakan layann yang di sediakan oleh kami_
+		`;
+		kris.sendMessage(m.chat, { text: `${suc}` }, { quoted: m });
+	}
+};
+function formatMoney(nominal) {
       // Mengonversi angka menjadi string
       var strNominal = nominal.toString();
       // Mengambil bagian angka sebelum koma

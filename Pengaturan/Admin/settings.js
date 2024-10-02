@@ -12,7 +12,7 @@ global.telegram = "@rezekibotz";
 global.channel = " ";
 global.website = " ";
 global.server = "Fz-Store H2H";
-global.digiuser = ""; //username digi
+global.digiuser = "kobigoDA2zbW"; //username digi
 
 global.digiapi = "d1df0cb3-dfbf-sae2-b34e-98de185aa6c"; //apikey digi
 global.sessionName = "session";
@@ -63,7 +63,7 @@ global.paydisini = {
   idpay: "961",
   validt: "300",
   layanan: "11", //jika belum verifaksi ganti jadi 11
-  apikey: "d1df0cb3-dfbf-5fe2-b34e-98de185a8d6c", // apikey paydisini
+  apikey: "997d5f70e07dfea5de2c0a96d57372ac", // apikey paydisini
   type_fee: "1",
 };
 let file = require.resolve(__filename);
