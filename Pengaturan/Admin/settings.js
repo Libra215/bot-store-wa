@@ -4,7 +4,7 @@ const fs = require("fs");
 global.owner = "6285735200842";
 global.newslatter = "Fz-Store";
 global.multiowner = ['6285812486745@s.whatsapp.net', '6285735200842@s.whatsapp.net', '6285735115194@s.whatsapp.net'];
-global.toko = "PT FZ-STORE INDOENSIA";
+global.toko = "PT FZ-STORE INDONESIA";
 global.namabot = "Fz-Store";
 global.ownername = "Mardok`s";
 global.botname = "Fz-STore";
@@ -12,9 +12,9 @@ global.telegram = "@rezekibotz";
 global.channel = " ";
 global.website = " ";
 global.server = "Fz-Store H2H";
-global.digiuser = "kobigoDA2zbW"; //username digi
+global.digiuser = ""; //username digi
 
-global.digiapi = "d1df0cb3-dfbf-5fe2-b34e-98de185a8d6c"; //apikey digi
+global.digiapi = "d1df0cb3-dfbf-sae2-b34e-98de185aa6c"; //apikey digi
 global.sessionName = "session";
 global.nomorKu = "6285735200842@s.whatsapp.net";
 global.pajak = `350`;
@@ -36,7 +36,7 @@ global.mess = {
   botAdmin: "Bot Nya Aja Gak Admin Duh",
   owner: "Anda Siapa Ini Khusus Owner Ku",
   group: "Fitur Untuk Grup Anjay",
-  private: "Fitur Cuma Bisa Di Vrivate Chat",
+  private: "Fitur Cuma Bisa Di Private Chat",
 };
 
 //______________________[ INFO UPLEVEL ]_______________________//
@@ -50,7 +50,7 @@ LIST BIAYA UPLEVEL :
 `;
 
 global.idpay = "961";
-global.keydepo = "997d5f70e07dfea5de2c0a96d57372ac"; //apikey paydisini
+global.keydepo = "d1df0cb3-dfbf-5fe2-b34e-98de185a8d6c"; //apikey paydisini
 
 global.tokopay = {
   validt: "1800",
@@ -63,7 +63,7 @@ global.paydisini = {
   idpay: "961",
   validt: "300",
   layanan: "11", //jika belum verifaksi ganti jadi 11
-  apikey: "997d5f70e07dfea5de2c0a96d57372ac", // apikey paydisini
+  apikey: "d1df0cb3-dfbf-5fe2-b34e-98de185a8d6c", // apikey paydisini
   type_fee: "1",
 };
 let file = require.resolve(__filename);

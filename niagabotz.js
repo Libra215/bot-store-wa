@@ -3619,7 +3619,7 @@ case "asli":
 
       	console.log(from);
 
-      	const msg = text.substring(text.indexOf("h") + 1).trim();
+      	const msg = text;
 
       	if (multiowner.includes(cek("id", m.sender))) {
       		try {
