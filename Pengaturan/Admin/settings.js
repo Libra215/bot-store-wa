@@ -60,7 +60,8 @@ global.tokopay = {
   type_fee: "1",
 };
 global.paydisini = {
-  validt: "1800",
+  idpay: "961",
+  validt: "300",
   layanan: "11", //jika belum verifaksi ganti jadi 11
   apikey: "997d5f70e07dfea5de2c0a96d57372ac", // apikey paydisini
   type_fee: "1",

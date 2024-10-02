@@ -1259,165 +1259,128 @@ function confirm(produk, tujuan, nama, harga) {
 }
 
 
-function checkPaymentStatus(
-	opa,
-	order_id,
-	produk,
-	tujuan,
-	nama,
-	harga,
-	attempt = 1
-	) {
-	const FormData = require("form-data");
-      const maxAttempts = 15; // Batas maksimum percobaan
+// const axios = require("axios");
+// const crypto = require("crypto");
+// const FormData = require("form-data");
+
+function checkPaymentStatus(opa, order_id, produk, tujuan, nama, harga, attempt = 1) {
+  const maxAttempts = 15; // Batas maksimum percobaan
+  const formData = new FormData();
+  formData.append("key", paydisini.apikey);
+  formData.append("request", "status");
+  formData.append("unique_code", order_id);
+  formData.append(
+  	"signature",
+  	crypto.createHash("md5").update(paydisini.apikey + order_id + "StatusTransaction").digest("hex")
+  	);
+
+  axios
+  .post("https://paydisini.co.id/api/", formData, {
+  	headers: {
+  		...formData.getHeaders(),
+  	},
+  })
+  .then(function (response) {
+  	if (response.data.success && response.data.data.status === "Pending") {
+  		if (attempt < maxAttempts) {
+  			setTimeout(() => {
+  				checkPaymentStatus(opa, order_id, produk, tujuan, nama, harga, attempt + 1);
+          }, 60000); // Interval pengecekan setiap 60 detik
+  		} else {
+  			m.reply("_Waktu Pembayaran telah habis_");
+          // kris.sendMessage(m.chat, { delete: opa.key });
+      }
+  } else if (response.data.success && response.data.data.status === "Success") {
+  	m.reply("_*Pembayaran berhasil. Pesanan sedang diproses_*");
+  	kris.sendMessage(m.chat, { delete: opa.key });
+  	confirm(produk, tujuan, nama, harga);
+  } else {
+  	m.reply("Gagal memeriksa status pembayaran atau status pembayaran bukan Pending.");
+  }
+})
+  .catch(function (error) {
+  	m.reply("Terjadi kesalahan saat memeriksa status pembayaran. Silakan coba lagi nanti.");
+  	console.error("Error occurred while checking payment status:", error);
+  });
+}
+
+async function buy(produk, tujuan) {
+	let found = false;
+	for (let i of list_produk) {
+		if (i.buyer_sku_code === produk) {
+			const har = hitungHargaRole(i.price);
+
+			found = true;
+			const nama = i.product_name;
+			const desc = i.desc;
+      let data_trx = crypto.randomBytes(5).toString("hex").toUpperCase(); // Generate kode unik
+      const url = "https://paydisini.co.id/api/";
+      const unikcode = `${data_trx}`;
+      const signature = crypto
+      .createHash("md5")
+      .update(paydisini.apikey + unikcode + paydisini.layanan + har + paydisini.validt + "NewTransaction")
+      .digest("hex");
       const formData = new FormData();
       formData.append("key", paydisini.apikey);
-      formData.append("request", "status");
-      formData.append("unique_code", order_id);
-      formData.append(
-      	"signature",
-      	crypto
-      	.createHash("md5")
-      	.update(paydisini.apikey + order_id + "StatusTransaction")
-      	.digest("hex")
-      	);
+      formData.append("request", "new");
+      formData.append("unique_code", unikcode);
+      formData.append("service", paydisini.layanan);
+      formData.append("amount", har);
+      formData.append("note", desc);
+      formData.append("valid_time", paydisini.validt);
+      formData.append("type_fee", paydisini.type_fee);
+      formData.append("signature", signature);
 
-      axios
-      .post("https://paydisini.co.id/api/", formData, {
-      	headers: {
-      		...formData.getHeaders(),
-      	},
-      })
-      .then(function (response) {
-      	if (
-      		response.data.success &&
-      		response.data.data.status === "Pending"
-      		) {
-      		if (attempt < maxAttempts) {
-      			setTimeout(() => {
-      				checkPaymentStatus(
-      					opa,
-      					order_id,
-      					produk,
-      					tujuan,
-      					nama,
-      					harga,
-      					attempt + 1
-      					);
-              }, 20000); // Perubahan interval pengecekan menjadi 60000 milidetik (60 detik)
-      		} else {
-      			m.reply("_Waktu Pembayaran telah habis_");
-      			// kris.sendMessage(m.chat, { delete: opa.key });
-      		}
-      	} else if (
-      		response.data.success &&
-      		response.data.data.status === "Success"
-      		) {
-      		m.reply("_*pembayaran berhasil. Pesanan sedang di prosess_*");
+      try {
+      	const response = await axios.post(url, formData, {
+      		headers: {
+      			...formData.getHeaders(),
+      		},
+      	});
 
-      		kris.sendMessage(m.chat, { delete: opa.key });
-      		confirm(produk, tujuan, nama, harga);
-      	} else {
-      		reply(
-      			"Failed to check payment status or payment status is not Pending."
-      			);
-      	}
-      })
-      .catch(function (error) {
-      	console.error("Error occurred while checking payment status:", error);
-      });
+      	const responseData = response.data;
+      	if (responseData.success) {
+      		const data = responseData.data;
+
+      		let teks =
+      		`_🛍️ ORDER CONFIRMATION_\n\n` +
+      		`> _›› Order_ID:_ ${data.unique_code}\n` +
+      		`> _›› Kode:_ ${produk}\n` +
+      		`> _›› Nama:_ ${nama}\n` +
+      		`> _›› Target:_ ${tujuan}\n` +
+      		`> _›› Harga:_ ${har}\n` +
+      		`> _›› Pembayaran:_ QRIS\n` +
+      		`> _›› Note:_ ${desc}\n` +
+      		`> _›› PPN:_ ${data.fee}\n` +
+      		`> _›› Total:_ ${data.amount}\n\n` +
+      		`_*Waktu pembayaran hanya 5 menit*_`;
+
+      		let gambr = { url: data.qrcode_url };
+      		let opa = await kris.sendMessage(from, {
+      			image: gambr,
+      			caption: teks,
+      		});
+
+          // Pengecekan status pembayaran
+          checkPaymentStatus(opa, data.unique_code, produk, tujuan, nama, data.amount);
+      } else {
+      	m.reply(`Error: ${responseData.msg}`);
+      }
+  } catch (error) {
+  	console.error("Terjadi kesalahan:", error);
+  	m.reply("Terjadi kesalahan saat memproses transaksi, silakan coba lagi nanti.");
   }
+}
+}
 
-  async function buy(produk, tujuan) {
-  	let found = false;
-  	for (let i of list_produk) {
-  		if (i.buyer_sku_code == produk) {
-  			const har = hitungHargaRole(i.price);
+if (!found) {
+	m.reply("Maaf, produk yang Anda minta tidak tersedia.");
+}
+}
 
-  			found = true;
-  			const nama = i.product_name;
-  			const desc = i.desc;
-  			let data_trx = require("crypto")
-  			.randomBytes(5)
-  			.toString("hex")
-  			.toUpperCase();
-  			const url = "https://paydisini.co.id/api/";
-  			const unikcode = `${data_trx}`;
-  			const signature = md5(
-  				paydisini.apikey +
-  				unikcode +
-  				paydisini.layanan +
-  				har +
-  				paydisini.validt +
-  				"NewTransaction"
-  				);
-  			const FormData = require("form-data");
-  			const data = new FormData();
-  			data.append("key", paydisini.apikey);
-  			data.append("request", "new");
-  			data.append("unique_code", unikcode);
-  			data.append("service", paydisini.layanan);
-  			data.append("amount", har);
-  			data.append("note", randomString);
-  			data.append("valid_time", paydisini.validt);
-  			data.append("type_fee", paydisini.type_fee);
-  			data.append("signature", signature);
 
-  			try {
-  				const response = await fetch(url, {
-  					method: "POST",
-  					body: data,
-  				});
-
-  				const responseData = await response.json();
-  				if (responseData.success) {
-  					const data = responseData.data;
-
-  					let teks = 
-  					`_🛍️ ORDER CONFIRMATION_\n\n` +
-  					`> _›› Order_ID:_ ${data.unique_code}\n` +
-  					`> _›› Kode:_ ${produk}\n` +
-  					`> _›› Nama:_ ${nama}\n` +
-  					`> _›› Target:_ ${tujuan}\n` +
-  					`> _›› Harga:_ ${har}\n` +
-  					`> _›› Pembayaran:_ QRIS\n` +
-  					`> _›› Note:_ ${desc}\n` +
-  					`> _›› PPN:_ ${data.fee}\n` +
-  					`> _›› Total:_ ${data.amount}\n\n` +
-  					`_*Waktu pembayaran hanya 5 menit*_`;
-
-  					let gambr = { url: data.qrcode_url };
-  					let opa = await kris.sendMessage(from, {
-  						image: gambr,
-  						caption: teks,
-  					});
-  					checkPaymentStatus(
-  						opa,
-  						data.unique_code,
-  						produk,
-  						tujuan,
-  						nama,
-  						data.amount
-  						);
-  				} else {
-  					reply(`Error: ${responseData.msg}`);
-  				}
-  			} catch (error) {
-  				console.error("Terjadi kesalahan:", error);
-  				m.reply(
-  					"Terjadi kesalahan saat memproses transaksi, silakan coba lagi nanti."
-  					);
-  			}
-  		}
-  	}
-
-  	if (!found) {
-  		reply("Maaf, produk yang Anda minta tidak tersedia.");
-  	}
-  }
-
-  if (command === "opap") {
-  	if (!q) return reply(`Ingin Topup? silahkan ketik #cekharga`);
+if (command === "opap") {
+	if (!q) return reply(`Ingin Topup? silahkan ketik #cekharga`);
       const produk = q; // Pastikan produk diambil dari argumen kedua
       const senderId = sender.split("@")[0];
       const filePath = PathTrx + senderId + ".json";
@@ -4725,154 +4688,165 @@ break;
   // {
   // 	reply(`_Saat ini deposit otomatis sedang perbaikan, silahkan menggunakan deposit manual dengan owner_`)
   // }
-  case "otomatis":
-  case "depopay":
+
+  case "val":
   {
-        // Cek apakah sudah ada transaksi deposit yang sedang berlangsung
-        if (fs.existsSync(PathAutoo + m.sender.split("@")[0] + ".json")) {
-        	return reply(`Selesaikan Deposit Anda Sebelumnya Untuk Membatalkan Silahkan Ketik #cancel`);
+  	console.log(global.paydisini.type_fee);
+  }
+
+  break;
+  case "otomatis":
+  case "depopay": {
+  	let no = q.split(" ")[0];
+  	if (!no) return reply(`Jumlahnya mana?\n.depopay nominal`);
+
+    // Membuat referensi deposit
+    let reff_deposi = crypto.randomBytes(5).toString("hex").toUpperCase();
+    const url = "https://api.paydisini.co.id/v1/";
+    const key = global.paydisini.apikey;
+    const idpay = global.paydisini.idpay;
+    const unikcode = `${reff_deposi}`;
+    const notecode = `TRX-${reff_deposi}`;
+    const serv = global.paydisini.layanan;  // ID untuk layanan
+    const validt = global.paydisini.validt; // Waktu validitas
+    const type_fee = global.paydisini.type_fee;
+    const nominal = Number(no); // Nominal deposit
+
+    // Generate signature untuk permintaan deposit baru
+    const signature = crypto.createHash("md5").update(key + unikcode + serv + nominal + validt + "NewTransaction").digest("hex");
+    const FormData = require("form-data");
+    const fetch = require("node-fetch");
+
+    // Membuat FormData untuk dikirimkan ke API
+    const data = new FormData();
+    data.append("key", key);
+    data.append("pay_id", idpay);
+    data.append("request", "new");
+    data.append("unique_code", unikcode);
+    data.append("service", serv);
+    data.append("amount", nominal);
+    data.append("note", notecode);
+    data.append("valid_time", validt);
+    data.append("type_fee", type_fee);
+    data.append("signature", signature);
+
+    try {
+        // Kirim permintaan deposit baru ke API
+        const response = await fetch(url, {
+        	method: "POST",
+        	body: data,
+        });
+
+        const responseData = await response.json();
+        if (responseData.success) {
+        	const data = responseData.data;
+        	console.log(data);
+        	let teks = 
+        	`✦━━━━━━━━━━━━━━━━━✦\n` +
+        	`*KONFIRMASI PEMBAYARAN*\n` +
+        	`✦━━━━━━━━━━━━━━━━━✦\n\n` +
+        	`⍟ Url Qris: ${data.checkout_url_v3}\n\n` +
+        	`⍟ Ref Id: ${data.unique_code}\n` +
+        	`⍟ Status: ${data.status}\n` +
+        	`⍟ Jumlah Deposit: ${nominal}\n` +
+        	`⍟ Fee: ${formatmoney(data.fee)}\n` +
+        	`⍟ Saldo Diterima: ${data.balance}\n` +
+        	`⍟ Total: ${formatmoney(data.amount)}\n` +
+        	`⍟ Expired: ${data.expired}\n\n` +
+        	`Silakan Buka Url dan scan QRIS tersebut sebelum waktu expired 5 menit. Jika sudah melakukan pembayaran, harap tunggu verifikasi.`;
+
+        	// let gambr = { url: data.qrcode_url };
+        	// await kris.sendMessage(from, { image: gambr, caption: teks });
+        	// await kris.sendMessage(from, text: teks)
+        	await kris.sendMessage(from, { text: teks }, { quoted: m });
+
+            // Simpan detail deposit ke file untuk pengecekan status
+            let obj = {
+            	id: m.sender.split("@")[0],
+            	ref: data.unique_code,
+            	jumlah_bayar: data.amount,
+            	jumlah_deposit: nominal,
+            	saldo_diterima: data.balance,
+            	pay: "QRIS",
+            	biaya_layanan: data.fee,
+            };
+            fs.writeFileSync(PathAutoo + m.sender.split("@")[0] + ".json", JSON.stringify(obj));
+
+            // Pengecekan status secara otomatis
+            const checkStatusInterval = setInterval(async () => {
+            	try {
+            		const statusSignature = crypto.createHash("md5").update(key + data.unique_code + "StatusTransaction").digest("hex");
+            		const statusData = new FormData();
+            		statusData.append("key", key);
+            		statusData.append("request", "status");
+            		statusData.append("unique_code", data.unique_code);
+            		statusData.append("signature", statusSignature);
+
+            		const statusResponse = await fetch(url, {
+            			method: "POST",
+            			body: statusData,
+            		});
+
+            		const statusResponseData = await statusResponse.json();
+            		console.log(statusResponseData.data.status)
+            		if (statusResponseData.success) {
+            			const statusData = statusResponseData.data;
+            			if (statusData.status === "Success") {
+            				sett("+saldo", m.sender, nominal);
+            				let lop = 
+            				`✅ *Deposit Berhasil!*\n\nDeposit Anda telah berhasil diproses. Berikut detailnya:\n` +
+            				`- *Nomor Transaksi:* _${data.unique_code}_\n` +
+            				`- *Jumlah Deposit:* _${nominal}_\n` +
+            				`- *Metode Pembayaran:* _QRIS_\n` +
+            				`- *Tanggal:* _${statusData.created_at}_\n` +
+            				`- *Saldo Anda :* _${cek("saldo", m.sender)}_\n\n` +
+            				`Saldo Anda sekarang telah diperbarui. Terima kasih atas depositnya!`;
+            				reply(lop);
+            				fs.unlinkSync(PathAutoo + m.sender.split("@")[0] + ".json");
+            				clearInterval(checkStatusInterval);
+            			} else if (statusData.status === "Canceled") {
+            				reply("Pembayaran deposit Anda telah dibatalkan.");
+            				fs.unlinkSync(PathAutoo + m.sender.split("@")[0] + ".json");
+            				clearInterval(checkStatusInterval);
+            			}
+            		} else {
+            			reply("Gagal mendapatkan status deposit. Silakan coba lagi nanti.");
+            			clearInterval(checkStatusInterval);
+            		}
+            	} catch (error) {
+            		console.error("Terjadi kesalahan saat pengecekan status:", error);
+            		reply("Terjadi kesalahan saat memproses transaksi, silakan coba lagi nanti.");
+            		clearInterval(checkStatusInterval);
+            	}
+            }, 60000); // Cek setiap 60 detik
+
+        } else {
+        	reply(`Error: ${responseData.msg}`);
         }
-
-        let no = q.split(" ")[0];
-        if (!no) return reply(`Jumlah Nya mana?\n.depopay nominal`);
-
-        // Membuat referensi deposit
-        let reff_deposi = require("crypto").randomBytes(5).toString("hex").toUpperCase();
-        const url = "https://paydisini.co.id/api/";
-        const key = global.keydepo;
-        const idpay = global.idpay;
-        const unikcode = `${reff_deposi}`;
-        const notecode = `TRX-${reff_deposi}`;
-        const serv = "11";  // ID untuk layanan
-        const validt = "1800"; // Waktu validitas
-        const nominal = Number(no); // Nominal deposit
-
-        // Generate signature untuk permintaan deposit baru
-        const signature = md5(key + unikcode + serv + nominal + validt + "NewTransaction");
-
-        // Membuat FormData untuk dikirimkan ke API
-        var FormData = require("form-data");
-        const data = new FormData();
-        data.append("key", key);
-        data.append("pay_id", idpay);
-        data.append("request", "new");
-        data.append("unique_code", unikcode);
-        data.append("service", serv);
-        data.append("amount", nominal);
-        data.append("note", notecode);
-        data.append("valid_time", validt);
-        data.append("type_fee", "1");
-        data.append("signature", signature);
-
-        try {
-            // Kirim permintaan deposit baru ke API
-            const response = await fetch(url, {
-            	method: "POST",
-            	body: data,
-            });
-
-            const responseData = await response.json();
-            if (responseData.success) {
-            	const data = responseData.data;
-            	let teks = 
-            	`✦━━━━━━━━━━━━━━━━━✦\n` +
-            	`*KONFIRMASI PEMBAYARAN*\n` +
-            	`✦━━━━━━━━━━━━━━━━━✦\n\n` +
-            	`⍟ Ref Id: ${data.unique_code}\n` +
-            	`⍟ Jumlah Deposit: ${nominal}\n` +
-            	`⍟ Fee: ${formatmoney(data.fee)}\n` +
-            	`⍟ Saldo Diterima: ${data.balance}\n` +
-            	`⍟ Total: ${formatmoney(data.amount)}\n\n` +
-            	`_Silahkan Scan QRIS Tersebut Sebelum Waktu Expired 5 Menit Lalu. Jika sudah melakukan pembayaran_`;
-
-            	console.log(data)
-            	let gambr = { url: data.qrcode_url };
-            	await kris.sendMessage(from, { image: gambr, caption: teks });
-
-            	let obj = {
-            		id: m.sender.split("@")[0],
-            		ref: `${data.unique_code}`,
-            		jumlah_bayar: data.amount,
-            		jumlah_deposit: nominal,
-            		saldo_diterima: data.balance,
-            		pay: "QRIS",
-            		biaya_layanan: data.fee,
-            	};
-            	fs.writeFileSync(PathAutoo + m.sender.split("@")[0] + ".json", JSON.stringify(obj));
-
-                // Pengecekan status secara otomatis
-                const checkStatusInterval = setInterval(async () => {
-                	try {
-                		const statusSignature = md5(key + data.unique_code + "StatusTransaction");
-                		const statusData = new FormData();
-                		statusData.append("key", key);
-                		statusData.append("request", "status");
-                		statusData.append("unique_code", data.unique_code);
-                		statusData.append("signature", statusSignature);
-
-                		const statusResponse = await fetch(url, {
-                			method: "POST",
-                			body: statusData,
-                		});
-
-                		const statusResponseData = await statusResponse.json();
-                		if (statusResponseData.success) {
-                			const statusData = statusResponseData.data;
-                			if (statusData.status === "Success") {
-                				sett("+saldo", m.sender, nominal);
-                				let lop = 
-                				`✅ *Deposit Berhasil!*\n\nDeposit Anda telah berhasil diproses. Berikut detailnya:\n` +
-                				`- *Nomor Transaksi:* _${data.unique_code}_\n` +
-                				`- *Jumlah Deposit:* _${nominal}_\n` +
-                				`- *Metode Pembayaran:* _QRIS_\n` +
-                				`- *Tanggal:* _${statusData.created_at}_\n` +
-                				`- *Saldo Anda :* _${cek("saldo", m.sender)}_\n\n` +
-                				`_Saldo Anda sekarang telah diperbarui. Terima kasih atas depositnya!_`;
-                				reply(lop);
-                				fs.unlinkSync(PathAutoo + m.sender.split("@")[0] + ".json");
-                				clearInterval(checkStatusInterval);
-                			} else if (statusData.status === "Canceled") {
-                				reply("Pembayaran deposit Anda telah dibatalkan.");
-                				fs.unlinkSync(PathAutoo + m.sender.split("@")[0] + ".json");
-                				clearInterval(checkStatusInterval);
-                			}
-                		} else {
-                			reply("Gagal mendapatkan status deposit. Silakan coba lagi nanti.");
-                			clearInterval(checkStatusInterval);
-                		}
-                	} catch (error) {
-                		console.error("Terjadi kesalahan saat pengecekan status:", error);
-                		reply("Terjadi kesalahan saat memproses transaksi, silakan coba lagi nanti.");
-                		clearInterval(checkStatusInterval);
-                	}
-                }, 60000); // Cek setiap 60 detik
-
-            } else {
-            	reply(`Error: ${responseData.msg}`);
-            }
-        } catch (error) {
-        	console.error("Terjadi kesalahan:", error);
-        	reply("Terjadi kesalahan saat memproses transaksi, silakan coba lagi nanti.");
-        }
+    } catch (error) {
+    	console.error("Terjadi kesalahan:", error);
+    	reply("Terjadi kesalahan saat memproses transaksi, silakan coba lagi nanti.");
     }
-    break;
+}
+break;
 
 
 
 
-    case "cancel":
-    {
-    	if (
-    		!fs.existsSync(
-    			`./Pengaturan/database/deposit/otomatis/${
-    				m.sender.split("@")[0]
-    			}.json`
-    			)
-    		)
-    		return reply("Anda Belum Melakukan deposit");
-    	let data_depo = JSON.parse(
-    		fs.readFileSync(PathAutoo + sender.split("@")[0] + ".json")
-    		);
+
+case "cancel":
+{
+	if (
+		!fs.existsSync(
+			`./Pengaturan/database/deposit/otomatis/${
+				m.sender.split("@")[0]
+			}.json`
+			)
+		)
+		return reply("Anda Belum Melakukan deposit");
+	let data_depo = JSON.parse(
+		fs.readFileSync(PathAutoo + sender.split("@")[0] + ".json")
+		);
       	// return data_depo;
       	var FormData = require("form-data");
       	var data = new FormData();
