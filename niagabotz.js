@@ -4830,7 +4830,7 @@ break;
             		reply("Terjadi kesalahan saat memproses transaksi, silakan coba lagi nanti.");
             		clearInterval(checkStatusInterval);
             	}
-            }, 60000); // Cek setiap 60 detik
+            }, 20000); // Cek setiap 20 detik
 
         } else {
         	reply(`Error: ${responseData.msg}`);
