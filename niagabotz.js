@@ -45,7 +45,7 @@ const { getWeb } = require("./Pengaturan/function/getproduk");
 const PathOtp = "./Pengaturan/database/otpweb/trx/";
 const PathTrx = "./Pengaturan/database/riwayat/trx/";
 const walletJson = "./Pengaturan/database/wallet.json";
-
+let ntlinkgc = JSON.parse(fs.readFileSync('./Pengaturan/database/antilink.json'))
 const {
 	fee_cus,
 	fee_owner,
@@ -197,6 +197,7 @@ module.exports = kris = async (kris, msg, m, chatUpdate, store) => {
 		const groupMembers = m.isGroup ? groupMetadata.participants : "";
 		const isBotAdmins = m.isGroup ? groupAdmins.includes(botNumber) : false;
 		const isGroupAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false;
+		const Antilink = m.isGroup ? ntlinkgc.includes(m.chat) : false;
 		const isAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false;
 		const content = JSON.stringify(msg.message);
 		const itsMe = m.sender == botNumber ? true : false;
@@ -770,6 +771,54 @@ let sett = (satu, dua, tiga) => {
 		}
 	});
 };
+
+if (Antilinkgc) {
+	if (budy.match('chat.whatsapp.com')) {
+		if (!isBotAdmins) return reply(`_Bot Harus Menjadi Admin Terlebih Dahulu_`);
+		try {
+			let gcLink = (`https://chat.whatsapp.com/` + await kris.groupInviteCode(m.chat));
+			let isLinkThisGc = new RegExp(gcLink, 'i');
+			let isGcLink = isLinkThisGc.test(m.text);
+
+			if (isGcLink) {
+				return kris.sendMessage(m.chat, {
+					text: `\`\`\`「 Group Link Detected 」\`\`\`\n\nAnda tidak akan di kick oleh bot karena yang Anda kirim adalah tautan ke grup ini`
+				});
+			}
+
+			if (isAdmins) {
+				return kris.sendMessage(m.chat, {
+					text: `\`\`\`「 Group Link Detected 」\`\`\`\n\nAdmin mengirimkan link, admin mah bebas memposting link apapun:)`
+				});
+			}
+
+			if (isOwner) {
+				return kris.sendMessage(m.chat, {
+					text: `\`\`\`「 Group Link Detected 」\`\`\`\n\nOwner telah mengirimkan tautan, owner bebas memposting tautan apa pun`
+				});
+			}
+
+			kice = m.sender;
+			await kris.sendMessage(m.chat, {
+				delete: {
+					remoteJid: m.chat,
+					fromMe: false,
+					id: m.key.id,
+					participant: m.key.participant
+				}
+			});
+
+			kris.sendMessage(from, {
+				text: `\`\`\`「 Tautan Terdeteksi 」\`\`\`\n\n@${m.sender.split('@')[0]} telah mengirimkan tautan dan berhasil dihapus`,
+				contextInfo: { mentionedJid: [m.sender] },
+				quoted: m
+			});
+		} catch (error) {
+			console.log("Terjadi kesalahan pada deteksi tautan: ", error);
+			reply("Maaf, terjadi kesalahan saat memproses tautan.");
+		}
+	}
+}
 
 const daftarr = () => {
 	if (cek("id", m.sender) == null) {
