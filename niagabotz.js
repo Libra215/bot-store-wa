@@ -2536,44 +2536,136 @@ if (command) {
         }
         break;
 
-        case "bukti":
-        {
-        	if (
-        		!fs.existsSync(
-        			`./Pengaturan/database/deposit/manual/${
-        				m.sender.split("@")[0]
-        			}.json`
-        			)
-        		)
-        		return reply("Anda Belum Melakukan deposit");
-        	let data_depo = JSON.parse(
-        		fs.readFileSync(PathAuto + sender.split("@")[0] + ".json")
-        		);
-        	if (!quoted)
-        		return reply(
-        			`Kirim/Reply gambar dengan caption *${prefix + command}*`
-        			);
-        	if (/image/.test(mime)) {
-        		let media = await quoted.download();
-        		m.reply(
-        			`Bukti berhasil terkirim ke owner, silahkan menunggu konfirmasi`
-        			);
-        		let buktii = 
-        		`📥 *DEPOSIT USER* 📥\n\n` +
-        		`➖➖➖➖➖➖➖➖➖➖\n` +
-        		`⭔ ID: ${data_depo.ref}\n` +
-        		`⭔ Nomor: ${data_depo.id}\n` +
-        		`⭔ Payment: ${data_depo.pay}\n` +
-        		`⭔ Tanggal: ${tanggal} ${jam}\n` +
-        		`⭔ Jumlah Bayar: ${formatmoney(data_depo.jumlah_bayar)}\n` +
-        		`⭔ Biaya Layanan: ${formatmoney(data_depo.biaya_layanan)}\n` +
-        		`⭔ Saldo Diterima: ${formatmoney(data_depo.saldo_diterima)}\n` +
-        		`➖➖➖➖➖➖➖➖➖➖\n\n` +
-        		`Ada yang melakukan deposit. Mohon untuk dicek saldo pengguna terkait.\n\n` +
-        		`Jika sudah masuk, silahkan konfirmasi dengan\n` +
-        		`*#acc* ${sender.split("@")[0]}\n` +
-        		`atau\n` +
-        		`*#tolak* ${sender.split("@")[0]}`;
+        case 'antilink':
+        case 'antilinkgc': {
+        	if (!m.isGroup) return reply(mess.only.group)
+        		if (!isBotAdmins) return reply('_Bot Harus Menjadi Admin Terlebih Dahulu_')
+        			if (!isAdmins && !ownernya) return reply('Khusus Admin!!')
+        				if (args[0] === "on") {
+        					if (Antilinkgc) return reply('Already activated')
+        						ntlinkgc.push(from)
+        					fs.writeFileSync('./database/antilinkgc.json', JSON.stringify(ntlinkgc))
+        					reply('Success in turning on antiwame in this group')
+        					var groupe = await kris.groupMetadata(from)
+        					var members = groupe['participants']
+        					var mems = []
+        					members.map(async adm => {
+        						mems.push(adm.id.replace('c.us', 's.whatsapp.net'))
+        					})
+        					kris.sendMessage(from, {text: `\`\`\`「 ⚠️Warning⚠️ 」\`\`\`\n\nNobody is allowed to send group link in this group, one who sends will be kicked immediately!`, contextInfo: { mentionedJid : mems }}, {quoted:m})
+        				} else if (args[0] === "off") {
+        					if (!Antilinkgc) return reply('Already deactivated')
+        						let off = ntlinkgc.indexOf(from)
+        					ntlinkgc.splice(off, 1)
+        					fs.writeFileSync('./database/antilinkgc.json', JSON.stringify(ntlinkgc))
+        					reply('Success in turning off antiwame in this group')
+        				} else {
+        					let msg = generateWAMessageFromContent(from, {
+        						viewOnceMessage: {
+        							message: {
+        								messageContextInfo: {
+        									deviceListMetadata: {},
+        									deviceListMetadataVersion: 2
+        								},
+        								interactiveMessage: proto.Message.InteractiveMessage.create({
+        									body: proto.Message.InteractiveMessage.Body.create({
+        										text: `Hai ${pushname}\nSilakan klik tombol di bawah untuk menggunakan _*${command}*_ command`
+        									}),
+        									footer: proto.Message.InteractiveMessage.Footer.create({
+        										text: botname
+        									}),
+        									header: proto.Message.InteractiveMessage.Header.create({
+        										...(await prepareWAMessageMedia({ image: { url: './data/image/thumb.jpg' } }, { upload: kris.waUploadToServer })),
+        										title: ``,
+        										gifPlayback: true,
+        										subtitle: ownername,
+        										hasMediaAttachment: false
+        									}),
+        									nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+        										buttons: [
+        										{
+        											name: "single_select",
+        											buttonParamsJson: `{
+        												"title":"PILIH ON/OFF ♨️",
+        												"sections":[{
+        													"title":"PILIH ON/OFF ",
+        													"rows":[{
+        														"header":"HIDUPKAN ✅",
+        														"title":"MEMILIH ",
+        														"description":"MENGHIDUPKAN ✅",
+        														"id":"${prefix + command} on"
+        													},
+        													{
+        														"header":"MEMATIKAN ❌",
+        														"title":"MEMILIH ",
+        														"description":"MEMATIKAN ❌",
+        														"id":"${prefix + command} off"
+        													}]
+        												}]
+        											}`
+        										}
+        										]
+        									}),
+        									contextInfo: {
+        										mentionedJid: [m.sender],
+        										forwardingScore: 999,
+        										isForwarded: true,
+        										forwardedNewsletterMessageInfo: {
+        											newsletterJid: '120363222395675670@newsletter',
+        											newsletterName: ownername,
+        											serverMessageId: 143
+        										}
+        									}
+        								})
+        							}
+        						}
+        					}, { quoted: m });
+
+        					await kris.relayMessage(msg.key.remoteJid, msg.message, {
+        						messageId: msg.key.id
+        					});
+        				}
+        			}
+        			
+
+        			case "bukti":
+        			{
+        				if (
+        					!fs.existsSync(
+        						`./Pengaturan/database/deposit/manual/${
+        							m.sender.split("@")[0]
+        						}.json`
+        						)
+        					)
+        					return reply("Anda Belum Melakukan deposit");
+        				let data_depo = JSON.parse(
+        					fs.readFileSync(PathAuto + sender.split("@")[0] + ".json")
+        					);
+        				if (!quoted)
+        					return reply(
+        						`Kirim/Reply gambar dengan caption *${prefix + command}*`
+        						);
+        				if (/image/.test(mime)) {
+        					let media = await quoted.download();
+        					m.reply(
+        						`Bukti berhasil terkirim ke owner, silahkan menunggu konfirmasi`
+        						);
+        					let buktii = 
+        					`📥 *DEPOSIT USER* 📥\n\n` +
+        					`➖➖➖➖➖➖➖➖➖➖\n` +
+        					`⭔ ID: ${data_depo.ref}\n` +
+        					`⭔ Nomor: ${data_depo.id}\n` +
+        					`⭔ Payment: ${data_depo.pay}\n` +
+        					`⭔ Tanggal: ${tanggal} ${jam}\n` +
+        					`⭔ Jumlah Bayar: ${formatmoney(data_depo.jumlah_bayar)}\n` +
+        					`⭔ Biaya Layanan: ${formatmoney(data_depo.biaya_layanan)}\n` +
+        					`⭔ Saldo Diterima: ${formatmoney(data_depo.saldo_diterima)}\n` +
+        					`➖➖➖➖➖➖➖➖➖➖\n\n` +
+        					`Ada yang melakukan deposit. Mohon untuk dicek saldo pengguna terkait.\n\n` +
+        					`Jika sudah masuk, silahkan konfirmasi dengan\n` +
+        					`*#acc* ${sender.split("@")[0]}\n` +
+        					`atau\n` +
+        					`*#tolak* ${sender.split("@")[0]}`;
 
 
             // Kirim bukti deposit ke owner
