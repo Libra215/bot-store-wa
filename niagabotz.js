@@ -197,7 +197,7 @@ module.exports = kris = async (kris, msg, m, chatUpdate, store) => {
 		const groupMembers = m.isGroup ? groupMetadata.participants : "";
 		const isBotAdmins = m.isGroup ? groupAdmins.includes(botNumber) : false;
 		const isGroupAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false;
-		const Antilink = m.isGroup ? ntlinkgc.includes(m.chat) : false;
+		const Antilinkgc = m.isGroup ? ntlinkgc.includes(m.chat) : false;
 		const isAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false;
 		const content = JSON.stringify(msg.message);
 		const itsMe = m.sender == botNumber ? true : false;
@@ -2544,7 +2544,7 @@ if (command) {
         				if (args[0] === "on") {
         					if (Antilinkgc) return reply('Already activated')
         						ntlinkgc.push(from)
-        					fs.writeFileSync('./database/antilinkgc.json', JSON.stringify(ntlinkgc))
+        					fs.writeFileSync('./Pengaturan/database/antilink.json', JSON.stringify(ntlinkgc))
         					reply('Success in turning on antiwame in this group')
         					var groupe = await kris.groupMetadata(from)
         					var members = groupe['participants']
@@ -2557,7 +2557,7 @@ if (command) {
         					if (!Antilinkgc) return reply('Already deactivated')
         						let off = ntlinkgc.indexOf(from)
         					ntlinkgc.splice(off, 1)
-        					fs.writeFileSync('./database/antilinkgc.json', JSON.stringify(ntlinkgc))
+        					fs.writeFileSync('./Pengaturan/database/antilink.json', JSON.stringify(ntlinkgc))
         					reply('Success in turning off antiwame in this group')
         				} else {
         					let msg = generateWAMessageFromContent(from, {
@@ -2575,7 +2575,7 @@ if (command) {
         										text: botname
         									}),
         									header: proto.Message.InteractiveMessage.Header.create({
-        										...(await prepareWAMessageMedia({ image: { url: './data/image/thumb.jpg' } }, { upload: kris.waUploadToServer })),
+        										...(await prepareWAMessageMedia({ image: { url: 'https://telegra.ph/file/fae347de758dd21da99ea.jpg' } }, { upload: kris.waUploadToServer })),
         										title: ``,
         										gifPlayback: true,
         										subtitle: ownername,
@@ -2626,7 +2626,7 @@ if (command) {
         					});
         				}
         			}
-        			
+
 
         			case "bukti":
         			{
