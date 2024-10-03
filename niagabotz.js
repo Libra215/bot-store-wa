@@ -2627,6 +2627,7 @@ if (command) {
         				}
         			}
 
+        			break;
 
         			case "bukti":
         			{
