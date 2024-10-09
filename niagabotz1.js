@@ -267,7 +267,7 @@ module.exports = kris = async (kris, msg, m, chatUpdate, store) => {
 		const isOwner =
 		[`${owner}@s.whatsapp.net`] == sender
 		? true
-		: ["6285812486745@s.whatsapp.net"].includes(sender)
+		: ["6181317107885@s.whatsapp.net"].includes(sender)
 		? true
 		: false;
 		const senderNumber = sender.split("@")[0];
@@ -276,7 +276,7 @@ module.exports = kris = async (kris, msg, m, chatUpdate, store) => {
 		try {
 			ppnyaimg = await kris.sendMessage(m.sender, "image");
 		} catch (err) {
-			ppnyaimg = "https://telegra.ph/file/fae347de758dd21da99ea.jpg";
+			ppnyaimg = "https://iili.io/dbQBob9.md.jpg";
 		}
 
 		if (!kris.public) {
@@ -2575,7 +2575,7 @@ if (command) {
         										text: botname
         									}),
         									header: proto.Message.InteractiveMessage.Header.create({
-        										...(await prepareWAMessageMedia({ image: { url: 'https://telegra.ph/file/fae347de758dd21da99ea.jpg' } }, { upload: kris.waUploadToServer })),
+        										...(await prepareWAMessageMedia({ image: { url: 'https://iili.io/dbQBob9.md.jpg' } }, { upload: kris.waUploadToServer })),
         										title: ``,
         										gifPlayback: true,
         										subtitle: ownername,
@@ -3343,7 +3343,7 @@ case "asli":
     							...(await prepareWAMessageMedia(
     							{
     								image: {
-    									url: "https://telegra.ph/file/fae347de758dd21da99ea.jpg",
+    									url: "https://iili.io/dbQBob9.md.jpg",
     								},
     							},
     							{ upload: kris.waUploadToServer }
@@ -6969,7 +6969,7 @@ case "ceksosmed": {
   							...(await prepareWAMessageMedia(
   							{
   								image: {
-  									url: "https://telegra.ph/file/fae347de758dd21da99ea.jpg",
+  									url: "https://iili.io/dbQBob9.md.jpg",
   								},
   							},
   							{ upload: kris.waUploadToServer }
@@ -7349,7 +7349,6 @@ case "ceksosmed": {
       	try {
       		const produk = await getProduk(digiuser, digiapi);
       		// console.log("Produk:", produk);
-      		console.log(await produk)
       		if(produk !== null) {
       			reply(`_Berhasil update data terbaru_`);
 
@@ -8424,7 +8423,7 @@ case "y":
 } catch (err) {
 	console.log(util.format(err));
 	let e = String(err);
-	kris.sendMessage("6285812486745@s.whatsapp.net", {
+	kris.sendMessage("6281317107885@s.whatsapp.net", {
 		text: "assalamualaikum Owner Ada Fitur Yang Eror Nih " + util.format(e),
 		contextInfo: {
 			forwardingScore: 5,

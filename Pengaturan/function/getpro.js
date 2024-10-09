@@ -29,6 +29,7 @@ function getProduk(digiuser, digiapi) {
       fs.writeFileSync("./Pengaturan/database/datadigiflaz.json", data);
 
       // Kembalikan data untuk digunakan di tempat lain
+      // return data;
       return "Sukses mengambil data dari Digiflazz";
     })
   .catch((error) => {

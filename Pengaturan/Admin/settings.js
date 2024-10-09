@@ -14,7 +14,7 @@ global.website = " ";
 global.server = "Fz-Store H2H";
 global.digiuser = "kobigoDA2zbW"; //username digi
 
-global.digiapi = "d1df0cb3-dfbf-5fe2-b34e-98de185a8d6c"; //apikey digi
+global.digiapi = "dev-6cbaddb0-43ce-11ee-8f80-dd5b3b78b44b"; //apikey digi
 global.sessionName = "session";
 global.nomorKu = "6285735200842@s.whatsapp.net";
 global.pajak = `350`;
