@@ -30,7 +30,7 @@ function getProduk(digiuser, digiapi) {
 
       // Kembalikan data untuk digunakan di tempat lain
       // return data;
-      return "Sukses mengambil data dari Digiflazz";
+      return data;
     })
   .catch((error) => {
     console.error("Gagal mengambil data dari Digiflazz", error);

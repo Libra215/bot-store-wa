@@ -140,101 +140,102 @@ async function Botstarted() {
     }
   }
 
-  setInterval(updateProduk, 300000); // 5 minutes
-  updateProduk();
+// Atur interval 5 menit
+setInterval(updateProduk, 300000); // 300000 ms = 5 menit
 
-  kris.ev.on("creds.update", saveCreds);
-  kris.ev.on("messages.upsert", () => {});
 
-  kris.ev.on("messages.upsert", async (chatUpdate) => {
-    try {
-      m = chatUpdate.messages[0];
-      if (!m.message) return;
-      m.message = Object.keys(m.message)[0] === "ephemeralMessage"
-      ? m.message.ephemeralMessage.message
-      : m.message;
-      if (m.key && m.key.remoteJid === "status@broadcast") return;
-      if (!kris.public && !m.key.fromMe && chatUpdate.type === "notify") return;
-      if (m.key.id.startsWith("BAE5") && m.key.id.length === 16) return;
-      var msg = m;
-      msg = serialize(kris, msg);
-      m = smsg(kris, m, store);
-      require("./niagabotz")(kris, msg, m, chatUpdate, store);
-    } catch (err) {
-      console.log(err);
-    }
-  });
+kris.ev.on("creds.update", saveCreds);
+kris.ev.on("messages.upsert", () => {});
 
-  kris.decodeJid = (jid) => {
-    if (!jid) return jid;
-    if (/:\d+@/gi.test(jid)) {
-      let decode = jidDecode(jid) || {};
-      return (decode.user && decode.server && decode.user + "@" + decode.server) || jid;
-    } else return jid;
-  };
+kris.ev.on("messages.upsert", async (chatUpdate) => {
+  try {
+    m = chatUpdate.messages[0];
+    if (!m.message) return;
+    m.message = Object.keys(m.message)[0] === "ephemeralMessage"
+    ? m.message.ephemeralMessage.message
+    : m.message;
+    if (m.key && m.key.remoteJid === "status@broadcast") return;
+    if (!kris.public && !m.key.fromMe && chatUpdate.type === "notify") return;
+    if (m.key.id.startsWith("BAE5") && m.key.id.length === 16) return;
+    var msg = m;
+    msg = serialize(kris, msg);
+    m = smsg(kris, m, store);
+    require("./niagabotz")(kris, msg, m, chatUpdate, store);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
-  kris.ev.on("contacts.update", (update) => {
-    for (let contact of update) {
-      let id = kris.decodeJid(contact.id);
-      if (store && store.contacts) store.contacts[id] = { id, name: contact.notify };
-    }
-  });
+kris.decodeJid = (jid) => {
+  if (!jid) return jid;
+  if (/:\d+@/gi.test(jid)) {
+    let decode = jidDecode(jid) || {};
+    return (decode.user && decode.server && decode.user + "@" + decode.server) || jid;
+  } else return jid;
+};
 
-  kris.getName = (jid, withoutContact = false) => {
-    id = kris.decodeJid(jid);
-    withoutContact = kris.withoutContact || withoutContact;
-    let v;
-    if (id.endsWith("@g.us")) {
-      return new Promise(async (resolve) => {
-        v = store.contacts[id] || {};
-        if (!(v.name || v.subject)) v = kris.groupMetadata(id) || {};
-        resolve(v.name || v.subject || PhoneNumber("+" + id.replace("@s.whatsapp.net", "")).getNumber("international"));
-      });
-    } else {
-      v = id === "0@s.whatsapp.net" ? { id, name: "WhatsApp" } : id === kris.decodeJid(kris.user.id) ? kris.user : store.contacts[id] || {};
-      return (withoutContact ? "" : v.name) || v.subject || v.verifiedName || PhoneNumber("+" + jid.replace("@s.whatsapp.net", "")).getNumber("international");
-    }
-  };
+kris.ev.on("contacts.update", (update) => {
+  for (let contact of update) {
+    let id = kris.decodeJid(contact.id);
+    if (store && store.contacts) store.contacts[id] = { id, name: contact.notify };
+  }
+});
 
-  kris.sendContact = async (jid, kon, quoted = "", opts = {}) => {
-    let list = [];
-    for (let i of kon) {
-      list.push({
-        displayName: await kris.getName(i + "@s.whatsapp.net"),
-        vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await kris.getName(i + "@s.whatsapp.net")}\nFN:${await kris.getName(i + "@s.whatsapp.net")}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`,
-      });
-    }
-    kris.sendMessage(
-      jid,
-      {
-        contacts: { displayName: `${list.length} Kontak`, contacts: list },
-        ...opts,
-      },
-      { quoted }
+kris.getName = (jid, withoutContact = false) => {
+  id = kris.decodeJid(jid);
+  withoutContact = kris.withoutContact || withoutContact;
+  let v;
+  if (id.endsWith("@g.us")) {
+    return new Promise(async (resolve) => {
+      v = store.contacts[id] || {};
+      if (!(v.name || v.subject)) v = kris.groupMetadata(id) || {};
+      resolve(v.name || v.subject || PhoneNumber("+" + id.replace("@s.whatsapp.net", "")).getNumber("international"));
+    });
+  } else {
+    v = id === "0@s.whatsapp.net" ? { id, name: "WhatsApp" } : id === kris.decodeJid(kris.user.id) ? kris.user : store.contacts[id] || {};
+    return (withoutContact ? "" : v.name) || v.subject || v.verifiedName || PhoneNumber("+" + jid.replace("@s.whatsapp.net", "")).getNumber("international");
+  }
+};
+
+kris.sendContact = async (jid, kon, quoted = "", opts = {}) => {
+  let list = [];
+  for (let i of kon) {
+    list.push({
+      displayName: await kris.getName(i + "@s.whatsapp.net"),
+      vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await kris.getName(i + "@s.whatsapp.net")}\nFN:${await kris.getName(i + "@s.whatsapp.net")}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`,
+    });
+  }
+  kris.sendMessage(
+    jid,
+    {
+      contacts: { displayName: `${list.length} Kontak`, contacts: list },
+      ...opts,
+    },
+    { quoted }
+    );
+};
+
+kris.public = true;
+kris.serializeM = (m) => smsg(kris, m, store);
+
+kris.ev.on("connection.update", ({ connection }) => {
+  if (connection === "open") {
+    console.log("KONEKSI Terhubung (" + kris.user?.id?.split(":")[0] + ")");
+  } else if (connection === "close") {
+    Botstarted();
+  } else if (connection === "connecting") {
+    console.log(
+      "KONEKSI " + (kris.user ? "Menghubungkan Ulang (" + kris.user?.id?.split(":")[0] + ")" : "Autentikasi Dibutuhkan")
       );
-  };
+  }
+});
 
-  kris.public = true;
-  kris.serializeM = (m) => smsg(kris, m, store);
+kris.ev.on("creds.update", saveCreds);
 
-  kris.ev.on("connection.update", ({ connection }) => {
-    if (connection === "open") {
-      console.log("KONEKSI Terhubung (" + kris.user?.id?.split(":")[0] + ")");
-    } else if (connection === "close") {
-      Botstarted();
-    } else if (connection === "connecting") {
-      console.log(
-        "KONEKSI " + (kris.user ? "Menghubungkan Ulang (" + kris.user?.id?.split(":")[0] + ")" : "Autentikasi Dibutuhkan")
-        );
-    }
-  });
+kris.sendText = (jid, text, quoted = "", options) =>
+kris.sendMessage(jid, { text: text, ...options }, { quoted });
 
-  kris.ev.on("creds.update", saveCreds);
-
-  kris.sendText = (jid, text, quoted = "", options) =>
-  kris.sendMessage(jid, { text: text, ...options }, { quoted });
-
-  return kris;
+return kris;
 }
 
 Botstarted();
