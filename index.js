@@ -133,15 +133,15 @@ async function Botstarted() {
       if (produk && produk.length > 0) {
         console.log(produk);
       } else {
-        console.log(`Tidak ada produk yang ditemukan atau produk kosong.`);
+        console.log("Tidak ada produk yang ditemukan atau produk kosong.");
       }
     } catch (error) {
       console.error("Terjadi kesalahan saat memperbarui produk:", error);
     }
   }
 
-// Atur interval 5 menit
-setInterval(updateProduk, 300000); // 300000 ms = 5 menit
+// Atur interval 10 menit
+setInterval(updateProduk, 600000); // 600000 ms = 10 menit
 
 
 kris.ev.on("creds.update", saveCreds);
